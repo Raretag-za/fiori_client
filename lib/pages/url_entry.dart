@@ -1,8 +1,6 @@
 import 'dart:developer';
 import 'dart:io';
-import 'package:fiori_client/pages/webview.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
+import 'package:fiori_client/pages/qr_scan.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -37,7 +35,6 @@ class _URLEntryState extends State<URLEntry> {
     _formKey = GlobalKey<FormState>();
     url = TextEditingController();
     isTouchLocked = false;
-    body = form();
     super.initState();
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
@@ -49,159 +46,86 @@ class _URLEntryState extends State<URLEntry> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: WillPopScope(
-        onWillPop: () async => false,
+        onWillPop: () async => true,
         child: AbsorbPointer(
-          absorbing: false/*isTouchLocked*/,
+          absorbing: false /*isTouchLocked*/,
           child: Scaffold(
-            // backgroundColor: Colors.grey.shade300,
-            extendBodyBehindAppBar: true,
-            body: Container(
+              // backgroundColor: Colors.grey.shade300,
+              extendBodyBehindAppBar: true,
+              body: Container(
                 padding: const EdgeInsets.symmetric(
-                    // vertical: 10.0,
-                    horizontal: 20.0,
+                  // vertical: 10.0,
+                  horizontal: 20.0,
                 ),
-                child: body,
-
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-
-  Widget form() {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        const SizedBox(height: 50.0,),
-        Expanded(
-          child: Form(
-            key: _formKey,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Flexible(
-                  child: SizedBox(
-                    height: 100.0,
-                    width: 100.0,
-                    // padding: const EdgeInsets.fromLTRB(1, 50, 50, 30),
-                    child:
-                    Image.asset('assets/images/cj.png'),
-                  ),
-                ),
-                const Spacer(),
-                Row(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    Expanded(
-                      child: TextFormField(
-                        textInputAction: TextInputAction.done,
-                        decoration: const InputDecoration(
-                          // icon: Icon(Icons.web),
-                          labelText: 'Enter URL',
-                        ),
-                        autofocus: true,
-                        controller: url,
-                        validator: (f) {
-                          if (f!.isEmpty) {
-                            return 'Please Enter A URL';
-                          }
-                        },
-                        onEditingComplete: () => validateForm(),
-                      ),
-                    ),
                     const SizedBox(
-                      width: 10.0,
+                      height: 50.0,
+                    ),
+                    Expanded(
+                      child: Form(
+                        key: _formKey,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            Flexible(
+                              child: SizedBox(
+                                height: 150.0,
+                                width: 150.0,
+                                child: Image.asset('assets/images/cj.png'),
+                              ),
+                            ),
+                            const Text(
+                              "Fiori Client",
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                  color: Colors.deepOrange,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 24.0),
+                            ),
+                            const SizedBox(
+                              height: 20.0,
+                            ),
+                            ListTile(
+                              title: Container(
+                                padding: const EdgeInsets.all(15.0),
+                                margin: const EdgeInsets.all(15.0),
+                                child: const Text(
+                                    'Press continue to scan SAP fiori URL QR code provided by your IT administrator',
+                                  style: TextStyle(
+                                      fontSize: 14.0,
+                                      color: Colors.deepOrange,
+                                      fontWeight: FontWeight.w400,
+                                      fontStyle: FontStyle
+                                          .italic /*,fontSize: double.minPositive*/) /*, textScaleFactor: double.minPositive*/,
+                                ),
+                              ),
+                              // isThreeLine: true,
+                            )
+                          ],
+                        ),
+                      ),
                     )
                   ],
                 ),
-                const SizedBox(
-                  height: 20.0,
-                ),
-                Container(
-                  // padding: const EdgeInsets.all(15.0),
-                  // margin: const EdgeInsets.all(15.0),
-                  decoration: BoxDecoration(
-                      color: Colors.white,
-                      border: Border.all(
-                          color: Colors.deepOrange,
-                      )
-                  ),
-                  child:  ListTile(
-                    title: Container(
-                      // padding: const EdgeInsets.all(15.0),
-                      // margin: const EdgeInsets.all(15.0),
-                      child: const Text(
-                          'Enter the SAP fiori url as indicated from your IT administrator',style: TextStyle(fontWeight: FontWeight.w100,fontStyle: FontStyle.italic/*,fontSize: double.minPositive*/)/*, textScaleFactor: double.minPositive*/,),
+              ),
+              floatingActionButton: FloatingActionButton.extended(
+                onPressed: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => const ScanCode(),
                     ),
-                    // isThreeLine: true,
-                  ),
-                ),
-                const SizedBox(
-                  height: 10.0,
-                ),
-                ElevatedButton(
-                  style: ButtonStyle(
-                    elevation: MaterialStateProperty.all(20.0),
-                  ),
-                  child: const Text('Continue'),
-                  onPressed: () => url.text.isNotEmpty
-                      ? validateForm()
-                      : ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        backgroundColor: Colors.red,
-                        content: Row(
-                          children: const [
-                            Icon(CupertinoIcons.exclamationmark,
-                              // color: Colors.red,
-                            ),
-                            Text('Type in URL first or scan QR code'),
-                          ],
-                        ),)
-                  ),
-                ),
-                // const SizedBox(
-                //   height: 10.0,
-                // ),
-                ElevatedButton(
-                  style: ButtonStyle(
-                    elevation: MaterialStateProperty.all(20.0),
-                    backgroundColor: MaterialStateProperty.all(Colors.white),
-                  ),
-                  child: const Text('Cancel',style: TextStyle(color: Colors.black),),
-                  onPressed: () => exit(0),
-                ),
-                const Spacer(),
-                Flexible(
-                    child: SizedBox(
-                  height: 90,
-                  width: 90,
-                  child: Image.asset('assets/images/sap.jpg'),)),
-              ],
-            ),
-          ),
+                  );
+                },
+                label: const Text('Continue'),
+                icon: const Icon(Icons.arrow_forward),
+                // backgroundColor: Colors.pink,
+              )),
         ),
-        const SizedBox(height: 50.0,),
-      ],
+      ),
     );
-  }
-
-  validateForm() {
-    if (_formKey.currentState!.validate()) {
-      saveURL();
-    }
-  }
-
-  saveURL() async {
-      preferences.then((SharedPreferences prefs) {
-        return (prefs.setString(URLEntry.urlKey, url.text));
-      });
-      Navigator.push(
-          context, MaterialPageRoute(builder: (context) => const AppWebView()));
-      setState(() {
-        // body =
-      });
   }
 }

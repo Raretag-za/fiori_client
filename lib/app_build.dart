@@ -5,28 +5,19 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'main.dart';
 
-class AppManager extends StatelessWidget
- {
+class AppManager extends StatelessWidget {
+  const AppManager({super.key,required this.home});
+  final Widget home;
   @override
   Widget build(BuildContext context) {
-    Widget home = const AppWebView();
-    preferences.then((value) {
-      String? url = value.getString('url') ;
-      if(url == null  || url == '') {
-        home = const URLEntry();
-      }
-    });
-
     return MaterialApp(
-      theme: ThemeData(
-          primarySwatch: Colors.deepOrange,
-        // scaffoldBackgroundColor: Colors.orange,
-          primaryColor: Colors.orange,
-          hoverColor: Colors.orange,
-          focusColor: Colors.orange,
-          hintColor: Colors.orange
-          ),
-      home: home
-    );
+        theme: ThemeData(
+            primarySwatch: Colors.deepOrange,
+            // scaffoldBackgroundColor: Colors.orange,
+            primaryColor: Colors.orange,
+            hoverColor: Colors.orange,
+            focusColor: Colors.orange,
+            hintColor: Colors.orange),
+        home: home);
   }
 }

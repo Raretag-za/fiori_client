@@ -1,22 +1,27 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 import '../main.dart';
 
 class AppWebView extends StatefulWidget {
-  const AppWebView({Key? key, this.cookieManager}) : super(key: key);
+  const AppWebView({Key? key, this.cookieManager, required this.url})
+      : super(key: key);
   final CookieManager? cookieManager;
+  final String url;
 
   @override
   State<AppWebView> createState() => _WebViewState();
 }
 
 class _WebViewState extends State<AppWebView> {
+  bool _isVisible = true;
   final Completer<WebViewController> _controller =
-  Completer<WebViewController>();
+      Completer<WebViewController>();
 
   @override
   void initState() {
@@ -30,48 +35,58 @@ class _WebViewState extends State<AppWebView> {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(child: Scaffold(
-      backgroundColor: Colors.white,
-      // appBar: AppBar(
-      //   // title: const Text('CJ Fiori'),
-      //   toolbarHeight: 1.0,
-      //   // This drop down menu demonstrates that Flutter widgets can be shown over the web view.
-      //   // actions: <Widget>[
-      //   //   NavigationControls(_controller.future),
-      //   //   SampleMenu(_controller.future, widget.cookieManager),
-      //   // ],
-      // ),
-      body: WebView(
-        initialUrl: 'https://fiori.dischem.co.za/sap/bc/ui5_ui5/ui2/ushell/shells/abap/Fiorilaunchpad.html#Shell-home',
-        javascriptMode: JavascriptMode.unrestricted,
-        onWebViewCreated: (WebViewController webViewController) {
-          _controller.complete(webViewController);
-        },
-        onProgress: (int progress) {
-          print('WebView is loading (progress : $progress%)');
-        },
-        javascriptChannels: <JavascriptChannel>{
-          _toasterJavascriptChannel(context),
-        },
-        navigationDelegate: (NavigationRequest request) {
-          if (request.url.startsWith('https://www.youtube.com/')) {
-            print('blocking navigation to $request}');
-            return NavigationDecision.prevent;
-          }
-          print('allowing navigation to $request');
-          return NavigationDecision.navigate;
-        },
-        onPageStarted: (String url) {
-          print('Page started loading: $url');
-        },
-        onPageFinished: (String url) {
-          print('Page finished loading: $url');
-        },
-        gestureNavigationEnabled: true,
-        backgroundColor: const Color(0x00000000),
-      ),
-      // floatingActionButton: favoriteButton(),
-    )
+    return SafeArea(
+        child: WillPopScope(
+            onWillPop: () async => true,
+            child: Scaffold(
+                backgroundColor: Colors.white,
+                body: GestureDetector(
+                  onTap: () {
+                    // print('onTap');
+                    _isVisible = true;
+                  },
+                  onLongPress: () {
+                    _isVisible = false;
+                  },
+                  child: WebView(
+                    initialUrl: widget.url,
+                    javascriptMode: JavascriptMode.unrestricted,
+                    onWebViewCreated: (WebViewController webViewController) {
+                      _controller.complete(webViewController);
+                    },
+                    gestureNavigationEnabled: true,
+                    backgroundColor: const Color(0x00000000),
+                  ),
+                  // floatingActionButton: favoriteButton(),
+                ),
+                bottomNavigationBar: Offstage(
+                  offstage: _isVisible,
+                  child: BottomNavigationBar(
+                    type: BottomNavigationBarType.fixed,
+                    currentIndex: 0,
+                    items: const [
+                      BottomNavigationBarItem(
+                        icon: Icon(CupertinoIcons.settings),
+                        label: 'Settings',
+                      ),
+                      BottomNavigationBarItem(
+                        icon: Icon(CupertinoIcons.question),
+                        label: 'Help',
+                      )
+                    ],
+                    onTap: (onItemTapped) async {
+                      switch (onItemTapped) {
+                        case 0:
+                          await openAppSettings();
+                          break;
+                        case 1:
+                          break;
+                      }
+                    },
+                  ),
+                )
+            )
+        )
     );
   }
 
