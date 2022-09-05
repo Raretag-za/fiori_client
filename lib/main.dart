@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:fiori_client/pages/url_entry.dart';
 import 'package:fiori_client/pages/webview.dart';
 import 'package:flutter/foundation.dart';
@@ -10,7 +12,9 @@ final Future<SharedPreferences> preferences = SharedPreferences.getInstance();
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await checkUpdates();
+  if (Platform.isAndroid) {
+    await checkUpdates();
+  }
   preferences.then((value) {
     Widget home;
     String? url = value.getString('url');
