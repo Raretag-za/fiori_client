@@ -35,10 +35,9 @@ class _ScanCodeState extends State<ScanCode> {
   saveURL(String url) async {
     preferences.then((SharedPreferences prefs) {
       prefs.setString(ScanCode.urlKey, url);
-      Navigator.pushAndRemoveUntil(
+      Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => AppWebView(url: url)),
-        (Route<dynamic> route) => false,
+        MaterialPageRoute(builder: (context) => AppWebView(url: url))
       );
       setState(() {});
     });
