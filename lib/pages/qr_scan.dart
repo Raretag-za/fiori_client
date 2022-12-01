@@ -6,6 +6,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../main.dart';
 
 class ScanCode extends StatefulWidget {
+
+
   const ScanCode({Key? key}) : super(key: key);
   static const String urlKey = 'url';
   @override
@@ -13,6 +15,7 @@ class ScanCode extends StatefulWidget {
 }
 
 class _ScanCodeState extends State<ScanCode> {
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

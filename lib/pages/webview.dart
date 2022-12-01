@@ -37,7 +37,7 @@ class _WebViewState extends State<AppWebView> {
   Widget build(BuildContext context) {
     return SafeArea(
         child: WillPopScope(
-            onWillPop: () async => true,
+            onWillPop: () async => false,
             child: Scaffold(
                 backgroundColor: Colors.white,
                 body: GestureDetector(
