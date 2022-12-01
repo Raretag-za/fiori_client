@@ -26,20 +26,20 @@ class _WebViewState extends State<AppWebView> {
   @override
   void initState() {
     super.initState();
-    if (Platform.isAndroid) {
-      WebView.platform = SurfaceAndroidWebView();
-    } else if (Platform.isIOS) {
-      // WebView.platform = WKWebView();
-    }
+    // if (Platform.isAndroid) {
+    //   WebView.platform = SurfaceAndroidWebView();
+    // } else if (Platform.isIOS) {
+    //   // WebView.platform = WKWebView();
+    // }
   }
 
   @override
   Widget build(BuildContext context) {
     return SafeArea(
         child: WillPopScope(
-            onWillPop: () async => false,
+            onWillPop: () async => true,
             child: Scaffold(
-                backgroundColor: Colors.white,
+                // backgroundColor: Colors.white,
                 body: GestureDetector(
                   onTap: () {
                     // print('onTap');
@@ -55,7 +55,7 @@ class _WebViewState extends State<AppWebView> {
                       _controller.complete(webViewController);
                     },
                     gestureNavigationEnabled: true,
-                    backgroundColor: const Color(0x00000000),
+                    // backgroundColor: const Color(0x00000000),
                   ),
                   // floatingActionButton: favoriteButton(),
                 ),
