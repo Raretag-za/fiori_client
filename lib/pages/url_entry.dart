@@ -1,6 +1,7 @@
 import 'dart:developer';
 import 'dart:io';
 import 'package:fiori_client/pages/qr_scan.dart';
+import 'package:fiori_client/pages/webview.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -8,8 +9,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../main.dart';
 
 class URLEntry extends StatefulWidget {
-  const URLEntry({Key? key}) : super(key: key);
-
+  String url;
+  URLEntry({Key? key, required this.url}) : super(key: key);
   static const String urlKey = 'url';
 
   @override
@@ -17,23 +18,20 @@ class URLEntry extends StatefulWidget {
 }
 
 class _URLEntryState extends State<URLEntry> {
-  late final TextEditingController url;
+  TextEditingController urlController = TextEditingController();
   late final dynamic _formKey;
   late bool isTouchLocked;
   final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
   late Widget body;
 
-  // In order to get hot reload to work we need to pause the camera if the platform
-  // is android, or resume the camera if the platform is iOS.
-  @override
-  void reassemble() {
-    super.reassemble();
+  editUrl(){
+    widget.url = urlController.text;
   }
 
   @override
   void initState() {
     _formKey = GlobalKey<FormState>();
-    url = TextEditingController();
+    urlController.addListener(editUrl);
     isTouchLocked = false;
     super.initState();
     SystemChrome.setPreferredOrientations([
@@ -89,26 +87,26 @@ class _URLEntryState extends State<URLEntry> {
                             const SizedBox(
                               height: 20.0,
                             ),
-                            // ListTile(
-                            //   title: Container(
-                            //     padding: const EdgeInsets.all(15.0),
-                            //     margin: const EdgeInsets.all(15.0),
-                            //     child: const Text(
-                            //         'Press continue to scan SAP fiori URL QR code provided by your IT administrator',
-                            //       style: TextStyle(
-                            //           fontSize: 14.0,
-                            //           color: Colors.deepOrange,
-                            //           fontWeight: FontWeight.w400,
-                            //           fontStyle: FontStyle
-                            //               .italic /*,fontSize: double.minPositive*/) /*, textScaleFactor: double.minPositive*/,
-                            //     ),
-                            //   ),
-                            //   // isThreeLine: true,
-                            // ),
+                            ListTile(
+                              title: Container(
+                                padding: const EdgeInsets.all(15.0),
+                                margin: const EdgeInsets.all(15.0),
+                                child: const Text(
+                                    'Enter SAP Fiori URL or tap icon to scan QR code provided by your IT administrator',
+                                  style: TextStyle(
+                                      fontSize: 14.0,
+                                      color: Colors.redAccent,
+                                      fontWeight: FontWeight.w400) /*, textScaleFactor: double.minPositive*/,
+                                ),
+                              ),
+                              // isThreeLine: true,
+                            ),
                             TextField(
-                              controller: url,
+                              minLines: 1,
+                              maxLines: 5,
+                              controller: urlController,
                               decoration: InputDecoration(
-                                labelText: 'Enter SAP FIORI URL',
+                                labelText: 'Enter URL',
                                 prefixIcon: IconButton(
                                   onPressed: (){  
                                     Navigator.of(context).push(
@@ -119,32 +117,41 @@ class _URLEntryState extends State<URLEntry> {
                                   icon: const Icon(Icons.qr_code)
                                 ),
                                 suffixIcon: IconButton(
-                                  onPressed: url.clear,
+                                  onPressed: urlController.clear,
                                   icon: const Icon(Icons.clear),
                                 ),
                               ),
-                            )
+                            ),
+                            ElevatedButton(
+                              onPressed: (){
+                                preferences.then((SharedPreferences prefs) {
+                                  prefs.setString(ScanCode.urlKey, widget.url);
+                                  Navigator.pushAndRemoveUntil(
+                                    context,
+                                    MaterialPageRoute(builder: (context) => AppWebView(url: widget.url)),
+                                        (Route<dynamic> route) => false,
+                                  );
+                                  setState(() {});
+                                });
+                              },
+                              child: const Text("Continue"),
+                            ),
                           ],
                         ),
                       ),
-                    ),
+                    )
                   ],
                 ),
-              ),
-              floatingActionButton: FloatingActionButton.extended(
-                onPressed: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) => const ScanCode(),
-                    ),
-                  );
-                },
-                label: const Text('Continue'),
-                icon: const Icon(Icons.arrow_forward),
-                // backgroundColor: Colors.pink,
-              )),
+              )
+          ),
+
         ),
       ),
     );
+  }
+
+
+  navigateToWebView() async {
+
   }
 }

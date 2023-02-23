@@ -9,9 +9,9 @@ import 'package:webview_flutter/webview_flutter.dart';
 import '../main.dart';
 
 class AppWebView extends StatefulWidget {
-  const AppWebView({Key? key, this.cookieManager, required this.url})
+  const AppWebView({Key? key,required this.url})
       : super(key: key);
-  final CookieManager? cookieManager;
+
   final String url;
 
   @override

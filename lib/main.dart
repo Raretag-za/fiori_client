@@ -19,7 +19,7 @@ Future<void> main() async {
     Widget home;
     String? url = value.getString('url');
     if (url == null || url == '') {
-      home = const URLEntry();
+      home = URLEntry(url: '');
     } else {
       home = AppWebView(url: url);
     }
