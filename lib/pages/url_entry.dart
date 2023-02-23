@@ -89,26 +89,45 @@ class _URLEntryState extends State<URLEntry> {
                             const SizedBox(
                               height: 20.0,
                             ),
-                            ListTile(
-                              title: Container(
-                                padding: const EdgeInsets.all(15.0),
-                                margin: const EdgeInsets.all(15.0),
-                                child: const Text(
-                                    'Press continue to scan SAP fiori URL QR code provided by your IT administrator',
-                                  style: TextStyle(
-                                      fontSize: 14.0,
-                                      color: Colors.deepOrange,
-                                      fontWeight: FontWeight.w400,
-                                      fontStyle: FontStyle
-                                          .italic /*,fontSize: double.minPositive*/) /*, textScaleFactor: double.minPositive*/,
+                            // ListTile(
+                            //   title: Container(
+                            //     padding: const EdgeInsets.all(15.0),
+                            //     margin: const EdgeInsets.all(15.0),
+                            //     child: const Text(
+                            //         'Press continue to scan SAP fiori URL QR code provided by your IT administrator',
+                            //       style: TextStyle(
+                            //           fontSize: 14.0,
+                            //           color: Colors.deepOrange,
+                            //           fontWeight: FontWeight.w400,
+                            //           fontStyle: FontStyle
+                            //               .italic /*,fontSize: double.minPositive*/) /*, textScaleFactor: double.minPositive*/,
+                            //     ),
+                            //   ),
+                            //   // isThreeLine: true,
+                            // ),
+                            TextField(
+                              controller: url,
+                              decoration: InputDecoration(
+                                labelText: 'Enter SAP FIORI URL',
+                                prefixIcon: IconButton(
+                                  onPressed: (){  
+                                    Navigator.of(context).push(
+                                    MaterialPageRoute(
+                                      builder: (context) => const ScanCode(),
+                                    ),
+                                  );},
+                                  icon: const Icon(Icons.qr_code)
+                                ),
+                                suffixIcon: IconButton(
+                                  onPressed: url.clear,
+                                  icon: const Icon(Icons.clear),
                                 ),
                               ),
-                              // isThreeLine: true,
                             )
                           ],
                         ),
                       ),
-                    )
+                    ),
                   ],
                 ),
               ),
