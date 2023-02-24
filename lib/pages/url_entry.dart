@@ -99,8 +99,9 @@ class _URLEntryState extends State<URLEntry> {
                               child: Text(
                                 'Please enter SAP Fiori URL or tap icon to scan QR code provided by your IT administrator',
                                 style: TextStyle(
-                                    fontSize: 14.0,
-                                    color: Colors.green,
+                                  fontStyle: FontStyle.italic,
+                                    fontSize: 10.0,
+                                    color: Colors.black,
                                     fontWeight: FontWeight.w400),
                                 textAlign: TextAlign.center,
                               ),
