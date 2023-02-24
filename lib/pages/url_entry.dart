@@ -10,6 +10,7 @@ import '../main.dart';
 
 class URLEntry extends StatefulWidget {
   String url;
+
   URLEntry({Key? key, required this.url}) : super(key: key);
   static const String urlKey = 'url';
 
@@ -23,9 +24,16 @@ class _URLEntryState extends State<URLEntry> {
   late bool isTouchLocked;
   final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
   late Widget body;
+  bool _validate = false;
 
-  editUrl(){
+  editUrl() {
     widget.url = urlController.text;
+  }
+
+  @override
+  void dispose() {
+    urlController.dispose();
+    super.dispose();
   }
 
   @override
@@ -87,35 +95,38 @@ class _URLEntryState extends State<URLEntry> {
                             const SizedBox(
                               height: 20.0,
                             ),
-                            ListTile(
-                              title: Container(
-                                padding: const EdgeInsets.all(15.0),
-                                margin: const EdgeInsets.all(15.0),
-                                child: const Text(
-                                    'Enter SAP Fiori URL or tap icon to scan QR code provided by your IT administrator',
-                                  style: TextStyle(
-                                      fontSize: 14.0,
-                                      color: Colors.redAccent,
-                                      fontWeight: FontWeight.w400) /*, textScaleFactor: double.minPositive*/,
-                                ),
+                            const Center(
+                              child: Text(
+                                'Please enter SAP Fiori URL or tap icon to scan QR code provided by your IT administrator',
+                                style: TextStyle(
+                                    fontSize: 14.0,
+                                    color: Colors.green,
+                                    fontWeight: FontWeight.w400),
+                                textAlign: TextAlign.center,
                               ),
-                              // isThreeLine: true,
                             ),
+                            const SizedBox(
+                              height: 20.0,
+                            ),
+                            // isThreeLine: true,
+                            // ),
                             TextField(
                               minLines: 1,
                               maxLines: 5,
                               controller: urlController,
                               decoration: InputDecoration(
-                                labelText: 'Enter URL',
+                                labelText: 'URL',
+                                errorText: _validate ? 'Value Can\'t Be Empty' : null,
                                 prefixIcon: IconButton(
-                                  onPressed: (){  
-                                    Navigator.of(context).push(
-                                    MaterialPageRoute(
-                                      builder: (context) => const ScanCode(),
-                                    ),
-                                  );},
-                                  icon: const Icon(Icons.qr_code)
-                                ),
+                                    onPressed: () {
+                                      Navigator.of(context).push(
+                                        MaterialPageRoute(
+                                          builder: (context) =>
+                                              const ScanCode(),
+                                        ),
+                                      );
+                                    },
+                                    icon: const Icon(Icons.qr_code)),
                                 suffixIcon: IconButton(
                                   onPressed: urlController.clear,
                                   icon: const Icon(Icons.clear),
@@ -123,15 +134,25 @@ class _URLEntryState extends State<URLEntry> {
                               ),
                             ),
                             ElevatedButton(
-                              onPressed: (){
+                              onPressed: () {
                                 preferences.then((SharedPreferences prefs) {
-                                  prefs.setString(ScanCode.urlKey, widget.url);
-                                  Navigator.pushAndRemoveUntil(
-                                    context,
-                                    MaterialPageRoute(builder: (context) => AppWebView(url: widget.url)),
-                                        (Route<dynamic> route) => false,
-                                  );
-                                  setState(() {});
+                                  if (urlController.text.isEmpty) {
+                                    setState(() {
+                                      urlController.text.isEmpty ? _validate = true : _validate = false;
+                                    });
+                                  } else {
+                                    prefs.setString(
+                                        ScanCode.urlKey, widget.url);
+                                    Navigator.pushAndRemoveUntil(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              AppWebView(url: widget.url)),
+                                      (Route<dynamic> route) => false,
+                                    );
+                                    setState(() {
+                                    });
+                                  }
                                 });
                               },
                               child: const Text("Continue"),
@@ -142,16 +163,11 @@ class _URLEntryState extends State<URLEntry> {
                     )
                   ],
                 ),
-              )
-          ),
-
+              )),
         ),
       ),
     );
   }
 
-
-  navigateToWebView() async {
-
-  }
+  navigateToWebView() async {}
 }
