@@ -39,6 +39,7 @@ class _URLEntryState extends State<URLEntry> {
   @override
   void initState() {
     _formKey = GlobalKey<FormState>();
+    urlController.text = widget.url;
     urlController.addListener(editUrl);
     isTouchLocked = false;
     super.initState();
